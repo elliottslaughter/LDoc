@@ -11,7 +11,7 @@ endif
 LUA_SHAREDIR=$(PREFIX)/share/luajit-2.0.5
 
 ifeq ($(shell uname -s),Darwin)
-	LIB_OPTION= -bundle -undefined dynamic_loopkup
+	LIB_OPTION= -bundle -undefined dynamic_lookup
 else
 	LIB_OPTION= -shared
 endif
@@ -19,7 +19,7 @@ endif
 ldoc: penlight
 
 fs: luafilesystem
-	make -C luafilesystem LUA_INC=-I${TERRA_RELEASE}/include/terra LIB_OPTION=$(LIB_OPTION)
+	make -C luafilesystem LUA_INC=-I${TERRA_RELEASE}/include/terra LIB_OPTION="$(LIB_OPTION)"
 	make -C luafilesystem PREFIX=$(PREFIX) install
 
 penlight: Penlight fs
