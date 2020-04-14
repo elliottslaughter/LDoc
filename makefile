@@ -1,27 +1,33 @@
-LUA= $(shell echo `which lua`)
+LUA= $(shell echo `which terra`)
 LUA_BINDIR= $(shell echo `dirname $(LUA)`)
-LUA_PREFIX= $(shell echo `dirname $(LUA_BINDIR)`)
-LUA_SHAREDIR=$(LUA_PREFIX)/share/lua/5.1
-TERRA_BUILD = $(CURDIR)/../terra/release
+TERRA_RELEASE = $(CURDIR)/../terra/release
+
+ifneq ($(wildcard ../terra/build/luajit/share/luajit-2.0.5/.*),)
+	PREFIX=$(CURDIR)/../terra/build/luajit
+else
+	PREFIX=$(CURDIR)/../terra/build/
+endif
+
+LUA_SHAREDIR=$(PREFIX)/share/luajit-2.0.5
+
+ifeq ($(shell uname -s),Darwin)
+	LIB_OPTION= -bundle -undefined dynamic_loopkup
+else
+	LIB_OPTION= -shared
+endif
 
 ldoc: penlight
 
-
 fs: luafilesystem
-	make -C luafilesystem LUA_INC=-I${TERRA_BUILD}/include/terra
-	make -C luafilesystem PREFIX=$(TERRA_BUILD) install
+	make -C luafilesystem LUA_INC=-I${TERRA_RELEASE}/include/terra LIB_OPTION=$(LIB_OPTION)
+	make -C luafilesystem PREFIX=$(PREFIX) install
 
 penlight: Penlight fs
-	mkdir -p $(TERRA_BUILD)/share/luajit-2.0.5
-	ln -sfn $(CURDIR)/Penlight/lua/pl $(TERRA_BUILD)/share/luajit-2.0.5/
+	ln -sfn $(CURDIR)/Penlight/lua/pl $(PREFIX)/share/luajit-2.0.5/
 
 install: install_parts
-	echo "lua $(LUA_SHAREDIR)/ldoc.lua \$$*" > $(DESTDIR)$(LUA_BINDIR)/ldoc
-	chmod +x $(DESTDIR)$(LUA_BINDIR)/ldoc
-
-install_luajit: install_parts
-	echo "luajit $(LUA_SHAREDIR)/ldoc.lua \$$*" > $(DESTDIR)$(LUA_BINDIR)/ldoc
-	chmod +x $(DESTDIR)$(LUA_BINDIR)/ldoc
+	echo "terra $(CURDIR)/ldoc.lua \$$*" > $(TERRA_RELEASE)/bin/ldoc
+	chmod +x $(TERRA_RELEASE)/bin/ldoc
 
 install_parts:
 	mkdir -p $(DESTDIR)$(LUA_SHAREDIR)
