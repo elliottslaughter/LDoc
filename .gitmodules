@@ -1,0 +1,6 @@
+[submodule "Penlight"]
+	path = Penlight
+	url = https://github.com/Tieske/Penlight.git
+[submodule "luafilesystem"]
+	path = luafilesystem
+	url = https://github.com/keplerproject/luafilesystem.git

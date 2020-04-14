@@ -3,7 +3,15 @@ LUA_BINDIR= $(shell echo `dirname $(LUA)`)
 LUA_PREFIX= $(shell echo `dirname $(LUA_BINDIR)`)
 LUA_SHAREDIR=$(LUA_PREFIX)/share/lua/5.1
 
-ldoc:
+ldoc: penlight
+
+
+fs: luafilesystem
+	make -C luafilesystem LUA_INC=-I${CURDIR}/../terra/build/include/luajit-2.0
+	make -C luafilesystem PREFIX=$(CURDIR)/../terra/build install
+
+penlight: Penlight fs
+	ln -sfn $(CURDIR)/Penlight/lua/pl ${CURDIR}/../terra/build/share/luajit-2.0.5/
 
 install: install_parts
 	echo "lua $(LUA_SHAREDIR)/ldoc.lua \$$*" > $(DESTDIR)$(LUA_BINDIR)/ldoc
